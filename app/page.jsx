@@ -56,11 +56,11 @@ export default function Home() {
                   brightness={-0.06}
                   revealRadius={130}
                   softness={0.68}
-                  linger={0.9}
+                  linger={0}
                   rimColor="#d5a670"
                   rim={0.08}
-                  wander={!isOriginal}
-                  clickBurst={!isOriginal}
+                  wander={false}
+                  clickBurst={false}
                 />
               </div>
             </div>

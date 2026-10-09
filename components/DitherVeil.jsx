@@ -30,7 +30,6 @@ const MASK_SCALE = 0.5;
 const MAX_BURSTS = 4;
 const BURST_SECONDS = 1.2;
 const HOLD = 1.6;
-const INTRO_MS = 1100;
 
 const hexToRgb = hex => {
   let h = String(hex || '').replace('#', '');
@@ -501,7 +500,7 @@ const DitherVeil = ({
       uContrast: { value: 1 },
       uBrightness: { value: 0 },
       uReverse: { value: 0 },
-      uIntro: { value: 0 },
+      uIntro: { value: 1 },
       uHold: { value: HOLD },
       uMatte: { value: [0, 0, 0] },
       uKey: { value: 0 },
@@ -518,7 +517,6 @@ const DitherVeil = ({
     const samplerContext = sampler.getContext('2d', { willReadFrequently: true });
 
     let image = null;
-    let introStart = 0;
     let diffusedKey = '';
     let diffusionBlocked = false;
     let width = 1;
@@ -716,12 +714,10 @@ const DitherVeil = ({
       viewUniforms.uContrast.value = s.contrast;
       viewUniforms.uBrightness.value = s.brightness;
       viewUniforms.uReverse.value = s.reverse ? 1 : 0;
-      const intro = image ? (reducedMotion ? 1 : Math.min(1, (now - introStart) / INTRO_MS)) : 0;
-      viewUniforms.uIntro.value = 1 - Math.pow(1 - intro, 2);
       renderer.render({ scene: viewMesh });
 
       const busy =
-        pointer.inside || wanderOn || presence > 0.002 || bursts.length > 0 || now < trailUntil || (image && intro < 1);
+        pointer.inside || wanderOn || presence > 0.002 || bursts.length > 0 || now < trailUntil;
       if (busy && visible) raf = requestAnimationFrame(frame);
     };
 
@@ -745,7 +741,6 @@ const DitherVeil = ({
           viewUniforms.uKey.value = edge.plain && !edge.transparent ? 1 : 0;
         }
       } catch {}
-      introStart = performance.now();
       wake();
     };
     img.src = src;

@@ -679,8 +679,17 @@ function SplashCursor({
     initFramebuffers();
     let lastUpdateTime = Date.now();
     let colorUpdateTimer = 0.0;
+    let lastInputTime = 0;
+
+    function ensureLoop() {
+      lastInputTime = performance.now();
+      if (animationFrameId.current == null) {
+        animationFrameId.current = requestAnimationFrame(updateFrame);
+      }
+    }
 
     function updateFrame() {
+      animationFrameId.current = null;
       if (!isActive) return;
       const dt = calcDeltaTime();
       if (resizeCanvas()) initFramebuffers();
@@ -688,7 +697,9 @@ function SplashCursor({
       applyInputs();
       step(dt);
       render(null);
-      animationFrameId.current = requestAnimationFrame(updateFrame);
+      if (performance.now() - lastInputTime < 3000) {
+        animationFrameId.current = requestAnimationFrame(updateFrame);
+      }
     }
 
     function calcDeltaTime() {
@@ -987,6 +998,7 @@ function SplashCursor({
       let posY = scaleByPixelRatio(e.clientY);
       updatePointerDownData(pointer, -1, posX, posY);
       clickSplat(pointer);
+      ensureLoop();
     }
 
     let firstMouseMoveHandled = false;
@@ -1002,6 +1014,7 @@ function SplashCursor({
       } else {
         updatePointerMoveData(pointer, posX, posY, pointer.color);
       }
+      ensureLoop();
     }
 
     function handleTouchStart(e) {
@@ -1012,6 +1025,7 @@ function SplashCursor({
         let posY = scaleByPixelRatio(touches[i].clientY);
         updatePointerDownData(pointer, touches[i].identifier, posX, posY);
       }
+      ensureLoop();
     }
 
     function handleTouchMove(e) {
@@ -1022,6 +1036,7 @@ function SplashCursor({
         let posY = scaleByPixelRatio(touches[i].clientY);
         updatePointerMoveData(pointer, posX, posY, pointer.color);
       }
+      ensureLoop();
     }
 
     function handleTouchEnd(e) {
@@ -1032,15 +1047,13 @@ function SplashCursor({
       }
     }
 
-    const hoverTarget = document.querySelector('.dogs-stage');
+    const hoverTarget = document.querySelector('.page');
     if (!hoverTarget) return;
     hoverTarget.addEventListener('mousedown', handleMouseDown);
     hoverTarget.addEventListener('mousemove', handleMouseMove);
     hoverTarget.addEventListener('touchstart', handleTouchStart);
     hoverTarget.addEventListener('touchmove', handleTouchMove, false);
     hoverTarget.addEventListener('touchend', handleTouchEnd);
-
-    updateFrame();
 
     // Cleanup function
     return () => {

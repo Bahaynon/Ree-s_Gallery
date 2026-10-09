@@ -8,12 +8,17 @@ import SplashCursor from '../components/SplashCursor';
 
 export default function Home() {
   const [ditherReady, setDitherReady] = useState(false);
+  const [hasPointer, setHasPointer] = useState(false);
 
   return (
-    <main className="page">
-      <h1 className="background-title" aria-label="Beautiful Ree">
-        <span>Beautiful</span>
-        <span>Ree</span>
+    <main
+      className={`page${hasPointer ? ' has-pointer' : ''}`}
+      onPointerMove={() => setHasPointer(true)}
+      onPointerLeave={() => setHasPointer(false)}
+    >
+      <h1 className="background-title" aria-label="Beatuiful Zilla and Zia">
+        <span>Beatuiful</span>
+        <span>Zilla and Zia</span>
       </h1>
       <div className={`dogs-stage${ditherReady ? ' is-ready' : ''}`}>
         <img
@@ -39,20 +44,20 @@ export default function Home() {
           clickBurst={false}
           onReady={() => setDitherReady(true)}
         />
-        <GhostCursor
-          color="#B497CF"
-          brightness={1}
-          edgeIntensity={0}
-          trailLength={50}
-          inertia={0.5}
-          grainIntensity={0.05}
-          bloomStrength={0.1}
-          bloomRadius={1.0}
-          bloomThreshold={0.025}
-          fadeDelayMs={1000}
-          fadeDurationMs={1500}
-        />
       </div>
+      <GhostCursor
+        color="#B497CF"
+        brightness={1}
+        edgeIntensity={0}
+        trailLength={50}
+        inertia={0.5}
+        grainIntensity={0.05}
+        bloomStrength={0.1}
+        bloomRadius={1.0}
+        bloomThreshold={0.025}
+        fadeDelayMs={1000}
+        fadeDurationMs={1500}
+      />
       <SplashCursor />
     </main>
   );

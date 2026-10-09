@@ -59,9 +59,11 @@ const measureEdge = (context, image) => {
   const sum = [0, 0, 0];
   const squares = [0, 0, 0];
   let count = 0;
+  let transparentCount = 0;
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       if (x > 0 && y > 0 && x < size - 1 && y < size - 1) continue;
+      if (data[(y * size + x) * 4 + 3] < 240) transparentCount++;
       for (let c = 0; c < 3; c++) {
         const v = data[(y * size + x) * 4 + c] / 255;
         sum[c] += v;
@@ -73,7 +75,7 @@ const measureEdge = (context, image) => {
   const matte = [sum[0] / count, sum[1] / count, sum[2] / count];
   const spread =
     matte.reduce((total, mean, c) => total + Math.sqrt(Math.max(0, squares[c] / count - mean * mean)), 0) / 3;
-  return { matte, plain: spread < 0.06 };
+  return { matte, plain: spread < 0.06, transparent: transparentCount > count * 0.5 };
 };
 
 let blueNoise = null;
@@ -349,7 +351,8 @@ void main() {
   vec3 color = mix(uInk, mix(uInk, uPaper, level), max(framed, uKey));
   vec3 backdrop = mix(uInk, uPaper, toned(uMatte));
   vec2 photoUv = imageUv(vUv);
-  vec3 raw = texture(tImage, photoUv).rgb;
+  vec4 photoTexel = texture(tImage, photoUv);
+  vec3 raw = photoTexel.rgb;
   float plain = uKey * (1.0 - smoothstep(0.05, 0.22, distance(raw, uMatte)));
   vec3 photo = mix(mix(uInk, backdrop, uKey), mix(raw, backdrop, plain), within(photoUv));
 
@@ -359,12 +362,16 @@ void main() {
   float order = bayer(cell.yx);
   float low = order * (1.0 - uRim);
   color = mix(color, uRimColor, step(low, shown) * step(0.001, uRim));
-  color = mix(color, photo, step(low + uRim, shown));
+  float reveal = step(low + uRim, shown);
+  color = mix(color, photo, reveal);
 
   vec2 aspect = vec2(uResolution.x / uResolution.y, 1.0);
   float spread = length((cellUv - 0.5) * aspect) / length(aspect * 0.5);
   float appear = step(spread * 0.72 + bayer(cell + vec2(3.0, 5.0)) * 0.28, uIntro * 1.001);
-  fragColor = vec4(mix(uInk, color, appear), 1.0);
+  float ditherAlpha = texture(tImage, sampleUv).a * framed;
+  float photoAlpha = photoTexel.a * within(photoUv);
+  float alpha = mix(ditherAlpha, photoAlpha, reveal) * appear;
+  fragColor = vec4(mix(uInk, color, appear), alpha);
 }
 `;
 
@@ -422,8 +429,9 @@ const DitherVeil = ({
     if (!container) return undefined;
 
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    const renderer = new Renderer({ dpr: Math.min(window.devicePixelRatio || 1, 2), alpha: false, antialias: false });
+    const renderer = new Renderer({ dpr: Math.min(window.devicePixelRatio || 1, 2), alpha: true, antialias: false });
     const gl = renderer.gl;
+    gl.clearColor(0, 0, 0, 0);
     const canvas = gl.canvas;
     canvas.style.display = 'block';
     canvas.style.width = '100%';
@@ -733,8 +741,8 @@ const DitherVeil = ({
       try {
         if (samplerContext) {
           const edge = measureEdge(samplerContext, img);
-          viewUniforms.uMatte.value = edge.matte;
-          viewUniforms.uKey.value = edge.plain ? 1 : 0;
+          viewUniforms.uMatte.value = edge.transparent ? [1, 1, 1] : edge.matte;
+          viewUniforms.uKey.value = edge.plain && !edge.transparent ? 1 : 0;
         }
       } catch {}
       introStart = performance.now();
@@ -744,8 +752,8 @@ const DitherVeil = ({
 
     const locate = e => {
       const rect = container.getBoundingClientRect();
-      pointer.x = e.clientX - rect.left;
-      pointer.y = e.clientY - rect.top;
+      pointer.x = ((e.clientX - rect.left) / rect.width) * width;
+      pointer.y = ((e.clientY - rect.top) / rect.height) * height;
       pointer.placed = true;
     };
     const onMove = e => {

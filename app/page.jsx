@@ -38,23 +38,23 @@ export default function Home() {
               <div className="photo-surface">
                 <img
                   className="photo-original"
-                  src="/two-dogs.png"
-                  alt="Two small cream-colored dogs on a gray floor, with a colorful toy nearby."
-                  width="1086"
-                  height="1448"
+                  src="/remove_bg_preview.png"
+                  alt="Two small cream-colored dogs together, isolated from the background."
+                  width="433"
+                  height="577"
                   fetchPriority="high"
                 />
                 <DitherVeil
                   className={`photo-dither ${isOriginal ? 'is-hidden' : ''}`}
-                  src="/two-dogs.png"
+                  src="/remove_bg_preview.png"
                   fit="contain"
                   pattern={isOriginal ? 'floyd' : style}
                   pixelSize={style === 'lines' ? 2.4 : 2}
-                  inkColor="#1f2423"
-                  paperColor="#e9e8df"
-                  contrast={1.13}
-                  brightness={0.04}
-                  revealRadius={165}
+                  inkColor="#202725"
+                  paperColor="#e7d6b5"
+                  contrast={1.28}
+                  brightness={-0.06}
+                  revealRadius={130}
                   softness={0.68}
                   linger={0.9}
                   rimColor="#d5a670"
@@ -62,8 +62,6 @@ export default function Home() {
                   wander={!isOriginal}
                   clickBurst={!isOriginal}
                 />
-                <span className="photo-corner photo-corner-top" aria-hidden="true">RL / 01</span>
-                <span className="photo-corner photo-corner-bottom" aria-hidden="true">A MOMENT, HELD IN LIGHT</span>
               </div>
             </div>
             <span className="side-note side-note-right" aria-hidden="true">HOVER OR TAP TO REVEAL</span>

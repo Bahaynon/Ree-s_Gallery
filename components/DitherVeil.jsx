@@ -393,6 +393,7 @@ const DitherVeil = ({
   reverse = false,
   wander = false,
   clickBurst = true,
+  onReady,
   className = '',
   style
 }) => {
@@ -742,6 +743,7 @@ const DitherVeil = ({
         }
       } catch {}
       wake();
+      onReady?.();
     };
     img.src = src;
 

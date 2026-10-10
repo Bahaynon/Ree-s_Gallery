@@ -11,10 +11,7 @@ export default function Home() {
 
   return (
     <main className={`page${hoveredDog ? ' is-over-dog' : ''}`}>
-      <h1 className="background-title" aria-label="Zilla Zia">
-        <span className={`title-word${hoveredDog === 'zilla' ? ' is-visible' : ''}`}>Zilla</span>
-        <span className={`title-word${hoveredDog === 'zia' ? ' is-visible' : ''}`}>Zia</span>
-      </h1>
+      <h1 className="sr-only">Zilla and Zia</h1>
       <DogCards onHover={setHoveredDog} />
       <GhostCursor
         color="#B497CF"

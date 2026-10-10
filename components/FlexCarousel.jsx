@@ -152,8 +152,8 @@ void main() {
   vec2 local = vLocal / uSize + 0.5;
   float cardAspect = uSize.x / uSize.y;
   float imageAspect = uImage.x / max(uImage.y, 1.0);
-  vec2 scale = imageAspect > cardAspect ? vec2(cardAspect / imageAspect, 1.0) : vec2(1.0, imageAspect / cardAspect);
-  scale /= 1.08;
+  vec2 scale = imageAspect > cardAspect ? vec2(1.0, imageAspect / cardAspect) : vec2(cardAspect / imageAspect, 1.0);
+  scale *= 1.08;
   vec2 uv = vec2(local.x, 1.0 - local.y);
   uv = (uv - 0.5) * scale + 0.5;
   uv.x += uShift * (1.0 - scale.x) * 0.5;
@@ -162,8 +162,13 @@ void main() {
   float distanceToPointer = length((uRect.xy + vLocal) - uPointer);
   float spotlight = uHover * (1.0 - smoothstep(110.0, 200.0, distanceToPointer));
   vec3 photo = mix(dither.rgb, revealed.rgb, spotlight);
-  vec3 image = mix(vec3(0.075, 0.06, 0.095), photo, dither.a);
+  vec3 background = mix(vec3(0.12, 0.10, 0.15), vec3(0.075, 0.064, 0.10), local.y);
+  background += vec3(0.025, 0.015, 0.035) * (1.0 - smoothstep(0.0, 0.65, length((local - vec2(0.5, 0.47)) * vec2(0.9, 1.0))));
+  float insideImage = step(0.0, uv.x) * step(uv.x, 1.0) * step(0.0, uv.y) * step(uv.y, 1.0);
+  vec3 image = mix(background, photo, dither.a * insideImage);
   vec3 color = mix(uPlaceholder, image, uReady);
+  float border = (1.0 - smoothstep(0.0, 1.4, -sd)) * step(sd, 0.0);
+  color += vec3(0.08, 0.065, 0.105) * border;
   float alpha = mask * uAlpha;
   fragColor = vec4(color * alpha, alpha);
 }
@@ -1304,7 +1309,8 @@ const FlexCarousel = ({
 
   const current = list[active] || list[0];
   const label = current ? current.title || current.alt || `Image ${active + 1}` : '';
-  const hoveredItem = hoveredIndex === null ? null : list[hoveredIndex];
+  const captionIndex = hoveredIndex ?? active;
+  const captionItem = list[captionIndex];
 
   return (
     <div
@@ -1316,14 +1322,14 @@ const FlexCarousel = ({
       aria-label="Image carousel"
       tabIndex={0}
     >
-      {captions && hoveredItem && revealed && (
+      {captions && captionItem && revealed && (
         <div className="flex-carousel__caption" aria-hidden="true">
-          <span key={hoveredIndex} className="flex-carousel__title">
-            {hoveredItem.title || hoveredItem.alt}
-            {hoveredItem.subtitle && <span className="flex-carousel__subtitle">{hoveredItem.subtitle}</span>}
+          <span key={captionIndex} className="flex-carousel__title">
+            {captionItem.title || captionItem.alt}
+            {captionItem.subtitle && <span className="flex-carousel__subtitle">{captionItem.subtitle}</span>}
           </span>
           <span className="flex-carousel__count" data-hidden={focusOpen ? '' : undefined}>
-            <Digits value={hoveredIndex + 1} />
+            <Digits value={captionIndex + 1} />
             <span className="flex-carousel__slash">/</span>
             <span>{String(list.length).padStart(2, '0')}</span>
           </span>

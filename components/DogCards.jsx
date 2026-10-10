@@ -87,6 +87,7 @@ export default function DogCards({ onHover }) {
         preset="liquid"
         intro="rise"
         cardHeight={0.5}
+        fit="portrait"
         gap={12}
         squeeze={0.2}
         focusOnClick

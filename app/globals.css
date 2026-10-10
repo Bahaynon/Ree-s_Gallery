@@ -26,48 +26,13 @@ body {
   background: #120f17;
 }
 
-.background-title {
+.sr-only {
   position: absolute;
-  inset: 0;
-  z-index: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0;
-  padding: clamp(1.5rem, 4svh, 3rem) 1rem;
-  color: rgba(244, 241, 234, 0.36);
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(4rem, 10vw, 9rem);
-  font-weight: 400;
-  line-height: 0.9;
-  letter-spacing: -0.075em;
-  text-align: center;
-  pointer-events: none;
-  user-select: none;
-}
-
-.background-title .title-word {
-  display: block;
-  opacity: 0;
-  filter: blur(8px);
-  transition: filter 450ms ease, transform 450ms ease;
-}
-
-.background-title > .title-word {
-  transform: translateY(-12px);
-}
-
-.background-title > .title-word:last-child {
-  font-style: italic;
-  font-size: 0.9em;
-  transform: translateY(12px);
-}
-
-.background-title .title-word.is-visible {
-  opacity: 1;
-  filter: blur(0);
-  transform: translateY(0);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
 }
 
 .page.is-over-dog .ghost-cursor,
@@ -78,14 +43,19 @@ body {
 .carousel-stage {
   position: relative;
   z-index: 1;
-  width: min(94vw, 1050px);
-  height: min(100svh, 900px);
+  width: min(92vw, 1100px);
+  height: min(78svh, 700px);
+  overflow: hidden;
+  border: 1px solid rgba(225, 211, 239, 0.14);
+  border-radius: 22px;
+  background: #141019;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.22);
 }
 
 @media (max-width: 700px) {
   .carousel-stage {
-    width: 100vw;
-    height: 62svh;
+    width: 94vw;
+    height: min(55svh, 480px);
   }
 
   .page {
@@ -94,9 +64,4 @@ body {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .background-title .title-word {
-    transition: none;
-  }
-}
 

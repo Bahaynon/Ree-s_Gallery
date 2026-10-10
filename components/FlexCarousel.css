@@ -31,15 +31,16 @@
 
 .flex-carousel__caption {
   position: absolute;
-  left: clamp(20px, 5vw, 64px);
-  bottom: clamp(18px, 4svh, 42px);
+  left: 0;
+  right: 0;
+  top: calc(50% + var(--flex-carousel-half) * var(--flex-carousel-lift, 1) + 22px);
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 6px;
   padding: 0 16px;
   pointer-events: none;
-  text-align: left;
+  text-align: center;
   animation: flex-carousel-reveal 900ms ease both;
 }
 

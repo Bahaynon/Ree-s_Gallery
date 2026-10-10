@@ -20,6 +20,7 @@ body {
   position: relative;
   display: grid;
   place-items: center;
+  height: 100svh;
   min-height: 100svh;
   overflow: hidden;
   background: #120f17;
@@ -44,99 +45,57 @@ body {
   text-align: center;
   pointer-events: none;
   user-select: none;
+}
+
+.background-title .title-word {
+  display: block;
   opacity: 0;
   filter: blur(8px);
-  transition: opacity 650ms ease, filter 850ms ease;
+  transition: filter 450ms ease, transform 450ms ease;
 }
 
-.page.has-pointer .background-title {
+.background-title > .title-word {
+  transform: translateY(-12px);
+}
+
+.background-title > .title-word:last-child {
+  font-style: italic;
+  font-size: 0.9em;
+  transform: translateY(12px);
+}
+
+.background-title .title-word.is-visible {
   opacity: 1;
   filter: blur(0);
+  transform: translateY(0);
 }
 
-.background-title span {
-  display: block;
+.page.is-over-dog .ghost-cursor,
+.page.is-over-dog .splash-cursor {
+  opacity: 0;
 }
 
-.background-title span:last-child {
-  font-style: italic;
-  font-size: 0.72em;
-}
-
-.dogs-stage {
+.carousel-stage {
   position: relative;
   z-index: 1;
-  isolation: isolate;
-  width: min(86vw, 820px, 105svh);
-  aspect-ratio: 5 / 4;
-  cursor: crosshair;
-  animation: dogs-rise 2.1s both;
-}
-
-@keyframes dogs-rise {
-  0% {
-    opacity: 0;
-    transform: translateY(42svh) scale(0.5);
-  }
-
-  16% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.dogs-original,
-.dogs-dither {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transform: scale(1.8);
-  transform-origin: center;
-  filter: drop-shadow(0 28px 24px rgba(0, 0, 0, 0.48));
-}
-
-.dogs-original {
-  display: block;
-  object-fit: contain;
-}
-
-.dogs-dither {
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 1.45s ease-in-out;
-}
-
-.dogs-stage.is-ready .dogs-dither {
-  opacity: 1;
+  width: min(94vw, 1050px);
+  height: min(100svh, 900px);
 }
 
 @media (max-width: 700px) {
-  .dogs-stage {
-    width: min(100vw, 72svh);
-    aspect-ratio: 4 / 5;
+  .carousel-stage {
+    width: 100vw;
+    height: 62svh;
   }
 
-  .dogs-original,
-  .dogs-dither {
-    transform: scale(1.15);
+  .page {
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dogs-stage {
-    animation: none;
-  }
-
-  .dogs-dither {
-    transition: none;
-  }
-
-  .background-title {
+  .background-title .title-word {
     transition: none;
   }
 }

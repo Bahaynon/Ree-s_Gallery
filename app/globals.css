@@ -43,19 +43,14 @@ body {
 .carousel-stage {
   position: relative;
   z-index: 1;
-  width: min(92vw, 1100px);
-  height: min(78svh, 700px);
+  width: 100%;
+  height: min(100svh, 560px);
   overflow: hidden;
-  border: 1px solid rgba(225, 211, 239, 0.14);
-  border-radius: 22px;
-  background: #141019;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.22);
 }
 
 @media (max-width: 700px) {
   .carousel-stage {
-    width: 94vw;
-    height: min(55svh, 480px);
+    height: min(55svh, 460px);
   }
 
   .page {
